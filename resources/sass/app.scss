@@ -6,3 +6,19 @@
 
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
+
+
+.overlay {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+
+    .popup {
+        margin: auto;
+        padding: 2rem;
+        max-width: 90%;
+        background-color: white;
+        border-radius: 1rem;
+    }
+}

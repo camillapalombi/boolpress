@@ -31,7 +31,6 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
 
 const app = new Vue({
     el: '#app',
-    render: h => h(ExampleComponent)
 });
 
 
@@ -55,10 +54,11 @@ if (btnSlugger) {
 
 const confirmationOverlay = document.querySelector('#confirmation-overlay');
 if (confirmationOverlay) {
+    const confirmationForm = confirmationOverlay.querySelector('form');
+
     document.querySelectorAll('.btn-delete').forEach(button => {
         button.addEventListener('click', function() {
             const id = this.closest('tr').dataset.id;
-            const confirmationForm = confirmationOverlay.querySelector('form');
             const strAction = confirmationForm.dataset.base.replace('*****', id);
             confirmationForm.action = strAction;
             confirmationOverlay.classList.remove('d-none');
@@ -71,4 +71,12 @@ if (confirmationOverlay) {
         confirmationOverlay.classList.add('d-none');
     });
 
+}
+
+const formDelete = document.querySelector('#form-delete');
+if (formDelete) {
+    const btnDelete = document.querySelector('#btn-delete');
+    btnDelete.addEventListener('click', function() {
+        formDelete.submit();
+    })
 }

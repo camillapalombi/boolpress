@@ -4,8 +4,8 @@
 
 @section('pageContent')
     <div class="container">
-        @if (session('deleted'))
-            <div class="alert alert-warning">{{ session('deleted') }}</div>
+        @if (session('status'))
+            <div class="alert alert-warning">{{ session('status') }}</div>
         @endif
         <div class="row">
             <div class="col">
@@ -32,10 +32,14 @@
                                     <a class="btn btn-primary" href="{{ route('admin.posts.show', $post->slug) }}">View</a>
                                 </td>
                                 <td>
-                                    <a class="btn btn-primary" href="{{ route('admin.posts.edit', $post->slug) }}">Edit</a>
+                                    @if (Auth::user()->id === $post->user_id)
+                                        <a class="btn btn-primary" href="{{ route('admin.posts.edit', $post->slug) }}">Edit</a>
+                                    @endif
                                 </td>
                                 <td class="text-center">
-                                    <button class="btn btn-danger btn-delete">Delete</button>
+                                    @if (Auth::user()->id === $post->user_id)
+                                        <button class="btn btn-danger btn-delete">Delete</button>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach

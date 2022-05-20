@@ -32,6 +32,11 @@
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
                     <button>Update</button>
+                    <input id="btn-delete" type="button" value="Delete">
+                </form>
+                <form id="form-delete" action="{{ route('admin.posts.destroy', $post->slug) }}" method="post">
+                    @csrf
+                    @method('DELETE')
                 </form>
             </div>
         </div>

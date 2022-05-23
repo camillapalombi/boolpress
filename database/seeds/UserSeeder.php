@@ -14,6 +14,18 @@ class UserSeeder extends Seeder
      */
     public function run(Faker $faker)
     {
+        User::create([
+            'name'      => 'asdf',
+            'email'     => 'asdf@asdf.asdf',
+            'password'  => Hash::make('asdfasdf')
+        ]);
+
+        User::create([
+            'name'      => 'qwer',
+            'email'     => 'qwer@qwer.qwer',
+            'password'  => Hash::make('qwerqwer')
+        ]);
+
         for ($i=0; $i < 10; $i++) {
             User::create([
                 'name'      => $faker->name(),

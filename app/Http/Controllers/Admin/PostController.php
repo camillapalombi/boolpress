@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Post;
+use App\Category;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
@@ -26,6 +28,7 @@ class PostController extends Controller
                 Rule::unique('posts')->ignore($model),
                 'max:100'
             ],
+            'category_id'  => 'required|exists:App\Category,id',
             'content'   => 'required'
         ];
     }
@@ -41,11 +44,44 @@ class PostController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $posts = Post::paginate(50);
+        // $query = Post::where(1, '=', 1)
+        // $posts = Post::where('title', 'LIKE', "%$request->s%")
+        //     // ->orWhere(function($query) use ($request) {
+        //     //     $query->where('content', 'LIKE', "%$request->s%");
+        //     // })
+        //     ->where('category_id', $request->category)
+        //     ->where('user_id', $request->author)
+        //     ->paginate(20);
 
-        return view('admin.posts.index', compact('posts'));
+        $posts = Post::where('id', '>', 0);
+
+        if ($request->s) {
+            $posts->where('title', 'LIKE', "%$request->s%");
+        }
+
+        if ($request->category) {
+            $posts->where('category_id', $request->category);
+        }
+
+        if ($request->author) {
+            $posts->where('user_id', $request->author);
+        }
+
+        $posts = $posts->paginate(20);
+
+        // $posts = Post::paginate(50);
+
+        $categories = Category::all();
+        $users = User::all();
+
+        return view('admin.posts.index', [
+            'posts'         => $posts,
+            'categories'    => $categories,
+            'users'         => $users,
+            'request'       => $request
+        ]);
     }
 
     /**
@@ -55,7 +91,8 @@ class PostController extends Controller
      */
     public function create()
     {
-        return view('admin.posts.create');
+        $categories = \App\Category::all();
+        return view('admin.posts.create', compact('categories'));
     }
 
     /**

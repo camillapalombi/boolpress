@@ -12,7 +12,7 @@ class Post extends Model
         return 'slug';
     }
 
-    protected $fillable = ['title', 'content', 'slug', 'user_id'];
+    protected $fillable = ['title', 'content', 'slug', 'user_id', 'category_id'];
 
     static public function generateSlug($originalStr) {
         $baseSlug = Str::of($originalStr)->slug('-')->__toString();
@@ -27,5 +27,9 @@ class Post extends Model
 
     public function user() {
         return $this->belongsTo('App\User');
+    }
+
+    public function category() {
+        return $this->belongsTo('App\Category');
     }
 }

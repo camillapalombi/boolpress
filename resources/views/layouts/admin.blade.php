@@ -10,6 +10,21 @@
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
 <body>
-    @yield('pageContent')
+    <x-navbar color="dark" />
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-2">
+                <div><a href="{{ route('admin.posts.index') }}">All Posts</a></div>
+                <div><a href="{{ route('admin.posts.create') }}">New Post</a></div>
+                <div><a href="{{ route('admin.categories.index') }}">All Categories</a></div>
+                <div><a href="{{ route('admin.categories.create') }}">New Category</a></div>
+            </div>
+
+            <div class="col-10">
+                @yield('pageContent')
+            </div>
+        </div>
+    </div>
 </body>
 </html>

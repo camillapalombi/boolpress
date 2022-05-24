@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Post;
 use App\Category;
+use App\Tag;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -14,22 +15,18 @@ use Illuminate\Routing\Route;
 
 class PostController extends Controller
 {
-    public $validators = [
-        'title'     => 'required|max:100',
-        'content'   => 'required'
-    ];
-
     private function getValidators($model) {
         return [
             // 'user_id'   => 'required|exists:App\User,id',
-            'title'     => 'required|max:100',
-            'slug'      => [
+            'title'         => 'required|max:100',
+            'slug'          => [
                 'required',
                 Rule::unique('posts')->ignore($model),
                 'max:100'
             ],
-            'category_id'  => 'required|exists:App\Category,id',
-            'content'   => 'required'
+            'category_id'   => 'required|exists:App\Category,id',
+            'content'       => 'required',
+            'tags'          => 'exists:App\Tag,id'
         ];
     }
 
@@ -46,19 +43,13 @@ class PostController extends Controller
      */
     public function index(Request $request)
     {
-        // $query = Post::where(1, '=', 1)
-        // $posts = Post::where('title', 'LIKE', "%$request->s%")
-        //     // ->orWhere(function($query) use ($request) {
-        //     //     $query->where('content', 'LIKE', "%$request->s%");
-        //     // })
-        //     ->where('category_id', $request->category)
-        //     ->where('user_id', $request->author)
-        //     ->paginate(20);
-
-        $posts = Post::where('id', '>', 0);
+        $posts = Post::whereRaw('1 = 1');
 
         if ($request->s) {
-            $posts->where('title', 'LIKE', "%$request->s%");
+            $posts->where(function($query) use ($request) { // per aggiungere le parentesi nell'SQL
+                $query->where('title', 'LIKE', "%$request->s%")
+                    ->orWhere('content', 'LIKE', "%$request->s%");
+            });
         }
 
         if ($request->category) {
@@ -71,7 +62,21 @@ class PostController extends Controller
 
         $posts = $posts->paginate(20);
 
-        // $posts = Post::paginate(50);
+/*
+        $posts = Post::when($request->s, function ($query, $request){
+            return $query->where(function($query) use ($request) {
+                $query->where('title', 'LIKE', "%$request->s%")
+                    ->orWhere('content', 'LIKE', "%$request->s%");
+            });
+        })
+        ->when($request->category, function ($query, $request){
+            return $query->where('category_id', $request->category);
+        })
+        ->when($request->author, function ($query, $request){
+            return $query->where('user_id', $request->author);
+        })
+        ->paginate(20);
+*/
 
         $categories = Category::all();
         $users = User::all();
@@ -91,8 +96,12 @@ class PostController extends Controller
      */
     public function create()
     {
-        $categories = \App\Category::all();
-        return view('admin.posts.create', compact('categories'));
+        $categories = Category::all();
+        $tags = Tag::all();
+        return view('admin.posts.create', [
+            'categories'    => $categories,
+            'tags'          => $tags
+        ]);
     }
 
     /**
@@ -103,12 +112,36 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->all());
         $request->validate($this->getValidators(null));
 
         $formData = $request->all() + [
             'user_id' => Auth::user()->id
         ];
+
+
+        //preg_match_all('/#([0-9a-zA-Z]*)/', $formData['content'], $tags_from_content);
+        preg_match_all('/#(\S*)/', $formData['content'], $tags_from_content);
+
+        // TODO: gestire i tag già presenti nel database (evitare doppioni)
+        $tagIds = [];
+        foreach($tags_from_content[1] as $tag) {
+            $newTag = Tag::create([
+                'name'  => $tag,
+                //'slug'  => Str::slug($tag)
+                'slug'  => $tag
+            ]);
+
+            $tagIds[] = $newTag->id;
+        }
+
+        $formData['tags'] = $tagIds;
+
+        //dd($tags_from_content);
+
+
         $post = Post::create($formData);
+        $post->tags()->attach($formData['tags']);
 
         return redirect()->route('admin.posts.show', $post->slug);
     }
@@ -133,7 +166,13 @@ class PostController extends Controller
     public function edit(Post $post)
     {
         if (Auth::user()->id !== $post->user_id) abort(403);
-        return view('admin.posts.edit', compact('post'));
+        $categories = Category::all();
+        $tags = Tag::all();
+        return view('admin.posts.edit', [
+            'post'          => $post,
+            'categories'    => $categories,
+            'tags'          => $tags
+        ]);
     }
 
     /**
@@ -148,8 +187,10 @@ class PostController extends Controller
         if (Auth::user()->id !== $post->user_id) abort(403);
 
         $request->validate($this->getValidators($post));
+        $formData = $request->all();
 
-        $post->update($request->all());
+        $post->update($formData);
+        $post->tags()->sync($formData['tags']);
 
         return redirect()->route('admin.posts.show', $post->slug);
     }
@@ -164,6 +205,8 @@ class PostController extends Controller
     {
         if (Auth::user()->id !== $post->user_id) abort(403);
 
+        $post->tags()->detach();
+        // $post->tags()->sync([]);
         $post->delete();
 
         if (url()->previous() === route('admin.posts.edit', $post->slug)) {

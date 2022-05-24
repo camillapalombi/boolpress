@@ -54,3 +54,42 @@
 1. <code>php artisan serve</code>
 
 **CHIUDERE TUTTE LE TAB IN VISUAL STUDIO CODE**
+
+**Relazioni**
+1. Creare tutti i Model & Co. che ci servono (migration, seeder, controller, ...): <code>php artisan make:model --all ModelName</code>
+
+***Relazioni one-to-many:***
+Devono essere definite sia sulla migration che su ciascuno dei due model interessati:
+- nella migration va specificata la foreign key:
+    - create la colonna che conterrà la foreign key: <code>$table->unsignedBigInteger('model_id')</code>
+    - definire la foreign key: <code>$table->foreign('model_id')->references('id')->on('tableNameOfModel')</code>
+- nei models va definita un nuovo metodo:
+    - ModelA:
+        - public function modelbs () {
+            return $this->hasMany('App\ModelB');
+        }
+    - ModelB (ha la chiave esterna):
+        - public function modela () {
+            return $this->belongsTo('App\ModelA');
+        }
+
+***Relazioni many-to-many:***
+- create una migration per la tabella ponte (senza model) con nome tipo create_post_tag_table (i nomi dei models vanno inseriti al singolare e in ordine alfabetico)
+- nella migration vanno specificate le due foreign keys:
+    $table->unsignedBigInteger('post_id');
+    $table->foreign('post_id')->references('id')->on('posts');
+
+    $table->unsignedBigInteger('tag_id');
+    $table->foreign('tag_id')->references('id')->on('tags');
+
+    $table->primary(['post_id', 'tag_id']);
+
+- nei models va definita un nuovo metodo:
+    - Post:
+        public function tags() {
+            return $this->belongsToMany('App\Tag');
+        }
+    - Tag:
+        public function posts() {
+            return $this->belongsToMany('App\Post');
+        }

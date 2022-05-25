@@ -17,14 +17,15 @@ class EditPostsTable extends Migration
         Schema::table('posts', function (Blueprint $table) {
             $table->unsignedBigInteger('category_id')
                 ->nullable()
+                ->default(1)
                 ->after('user_id');
 
             $table->foreign('category_id')
                 ->references('id')
                 ->on('categories')
                 ->onDelete('SET NULL')
-                // ->onDelete('CASCADE')
-                // ->onDelete('SET DEFAULT')
+                // ->onDelete('CASCADE') //TODO: far funzionare questa qui
+                // ->onDelete('SET DEFAULT') // pare che non funzioni per colpa dell'innoDB
                 ;
         });
         //Schema::disableForeignKeyConstraints();

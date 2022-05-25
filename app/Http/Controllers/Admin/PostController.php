@@ -62,6 +62,10 @@ class PostController extends Controller
 
         $posts = $posts->paginate(20);
 
+        $queries = $request->query();
+        unset($queries['page']);
+        $posts->withPath('?' . http_build_query($queries, '', '&'));
+
 /*
         $posts = Post::when($request->s, function ($query, $request){
             return $query->where(function($query) use ($request) {
@@ -121,7 +125,7 @@ class PostController extends Controller
 
 
         //preg_match_all('/#([0-9a-zA-Z]*)/', $formData['content'], $tags_from_content);
-        preg_match_all('/#(\S*)/', $formData['content'], $tags_from_content);
+        preg_match_all('/#(\S*)\b/', $formData['content'], $tags_from_content);
 
         // TODO: gestire i tag già presenti nel database (evitare doppioni)
         $tagIds = [];
@@ -210,8 +214,8 @@ class PostController extends Controller
         $post->delete();
 
         if (url()->previous() === route('admin.posts.edit', $post->slug)) {
-            return redirect()->route('admin.home')->with('status', "Post $post->title deleted");;
+            return redirect()->route('admin.home')->with('status', "Post $post->title deleted");
         }
-        return redirect(url()->previous())->with('status', "Post $post->title deleted");;
+        return redirect(url()->previous())->with('status', "Post $post->title deleted");
     }
 }

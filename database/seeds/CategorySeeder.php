@@ -14,7 +14,7 @@ class CategorySeeder extends Seeder
     {
         $categories = [
             [
-                'name' => 'Sport'
+                'name' => 'Uncategorized'
             ],
             [
                 'name' => 'Politica'
@@ -42,6 +42,9 @@ class CategorySeeder extends Seeder
             ],
             [
                 'name' => 'Curiosità'
+            ],
+            [
+                'name' => 'Sport'
             ],
         ];
 

@@ -7,9 +7,16 @@
         <div class="row">
             <div class="col">
                 <h1>{{ $post->title }}</h1>
-                <b>{{ $post->user->name }}</b> - <b>{{ $post->user->userInfo->phone }}</b><br>
+                <b>{{ $post->user->name }}</b>@if ($post->user->userInfo && $post->user->userInfo->phone) - <b>{{ $post->user->userInfo->phone }}</b> @endif<br>
                 <b>{{ $post->category->name }}</b>
                 <p>{{ $post->content }}</p>
+                @if ($post->tags->all())
+                    <p>Tags:
+                        @foreach ($post->tags as $tag)
+                            <span class="tag">{{ $tag->name }}</span>
+                        @endforeach
+                    </p>
+                @endif
             </div>
         </div>
     </div>

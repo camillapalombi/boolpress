@@ -14,6 +14,10 @@ class Post extends Model
 
     protected $fillable = ['title', 'content', 'slug', 'user_id', 'category_id'];
 
+    // protected $attributes = [
+    //     'category_id' => 1,
+    // ];
+
     static public function generateSlug($originalStr) {
         $baseSlug = Str::of($originalStr)->slug('-')->__toString();
         $slug = $baseSlug;

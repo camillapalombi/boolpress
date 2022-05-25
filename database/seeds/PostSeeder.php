@@ -18,7 +18,7 @@ class PostSeeder extends Seeder
         $title = 'Ciao, a tutti!';
         Post::create([
             'user_id'       => 1,
-            'category_id'   => 1,
+            'category_id'   => 4,
             'title'         => $title,
             'content'       => $faker->text(rand(200, 1000)),
             'slug'          => Post::generateSlug($title)
@@ -38,7 +38,7 @@ class PostSeeder extends Seeder
             'slug'          => Post::generateSlug($title)
         ]);
 
-        for ($i=0; $i < 100; $i++) {
+        for ($i=0; $i < 1000; $i++) {
             $title = $faker->words(rand(2, 10), true);
             Post::create([
                 'user_id'       => User::inRandomOrder()->first()->id,

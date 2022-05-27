@@ -1,13 +1,15 @@
 <template>
     <div>
+        <h1>Ecco i nostri bellissimi post</h1>
+
         <div class="row g-4">
             <div class="col-4" v-for="post in posts" :key="post.id">
                 <div class="card h-100">
                     <!-- <img src="..." class="card-img-top" alt="..."> -->
                     <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">{{ post.title }}</h5>
-                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                        <a :href="'/posts/' + post.slug" class="btn btn-primary mt-auto">Read more</a>
+                        <h3 class="card-title">{{ post.title }}</h3>
+                        <p class="card-text">{{ getExcerpt(post.content) }}</p>
+                        <router-link :to="{name: 'postShow', params: {slug: post.slug}}" class="btn btn-primary mt-auto">Read more</router-link>
                     </div>
                 </div>
             </div>
@@ -53,9 +55,10 @@ export default {
     name: 'ContainerPosts',
     data() {
         return {
+            excerptMaxLenght: 200,
             posts: [],
 
-            baseApiUrl: 'http://localhost:8000/api/posts',
+            baseApiUrl: 'http://localhost:8000/api/v1/posts',
 
             nNewPage: null,
 
@@ -90,6 +93,13 @@ export default {
 
                     this.nNewPage = null;
                 });
+            }
+        },
+        getExcerpt(content) {
+            if (content.length > this.excerptMaxLenght) {
+                return content.substring(0, this.excerptMaxLenght) + ' ...';
+            } else {
+                return content;
             }
         }
     }

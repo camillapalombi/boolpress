@@ -13,10 +13,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::get('/', function () {
-//     return view('welcome');
-// })->name('homepage');
-
 Auth::routes();
 
 Route::middleware('auth')
@@ -32,8 +28,14 @@ Route::middleware('auth')
         Route::get('/account', 'UserController@edit')->name('account.edit');
         Route::post('/account', 'UserController@update')->name('account.update');
         Route::delete('/account', 'UserController@destroy')->name('account.destroy');
+
+        //Route::get('/posts/{post}', 'PostController@show')
     });
 
+
+// Route::get('/', function () {
+//     return view('guests.home');
+// })->name('homepage');
 
 Route::get("{any?}", function() {
     return view("guests.home");

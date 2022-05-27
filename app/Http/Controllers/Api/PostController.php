@@ -8,18 +8,33 @@ use App\Http\Controllers\Controller;
 
 class PostController extends Controller
 {
+    use \App\Traits\searchFilters;
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $posts = Post::paginate(15);
+        $attributes = $request->all();
 
+        if (array_key_exists('home', $attributes)) {
+            return response()->json([
+                'success'   => true,
+                'response'  => [
+                    'data'      => Post::inRandomOrder()->limit(4)->get(),
+                ]
+            ]);
+        }
+
+
+        $posts = $this->composeQuery($request);
+
+        $posts = $posts->with(['user', 'category', 'tags'])->paginate(15);
         return response()->json([
-            'status'    => 'success',
-            'response'  => $posts
+            'success'    => true,
+            'response'  => $posts,
         ]);
     }
 
@@ -50,9 +65,22 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($slug)
     {
-        //
+        $post = Post::with(['user', 'category', 'tags'])->where('slug', $slug)->first();
+        if ($post) {
+            return response()->json([
+                'success'   => true,
+                'response'  => [
+                    'data'      => $post,
+                ]
+            ]);
+        } else {
+            return response()->json([
+                'success'   => false,
+            ]);
+        }
+
     }
 
     /**

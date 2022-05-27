@@ -15,6 +15,8 @@ use Illuminate\Routing\Route;
 
 class PostController extends Controller
 {
+    use \App\Traits\searchFilters;
+
     private function getValidators($model) {
         return [
             // 'user_id'   => 'required|exists:App\User,id',
@@ -43,22 +45,7 @@ class PostController extends Controller
      */
     public function index(Request $request)
     {
-        $posts = Post::whereRaw('1 = 1');
-
-        if ($request->s) {
-            $posts->where(function($query) use ($request) { // per aggiungere le parentesi nell'SQL
-                $query->where('title', 'LIKE', "%$request->s%")
-                    ->orWhere('content', 'LIKE', "%$request->s%");
-            });
-        }
-
-        if ($request->category) {
-            $posts->where('category_id', $request->category);
-        }
-
-        if ($request->author) {
-            $posts->where('user_id', $request->author);
-        }
+        $posts = $this->composeQuery($request);
 
         $posts = $posts->paginate(20);
 

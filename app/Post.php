@@ -12,7 +12,7 @@ class Post extends Model
         return 'slug';
     }
 
-    protected $fillable = ['title', 'content', 'slug', 'user_id', 'category_id'];
+    protected $fillable = ['title', 'content', 'slug', 'user_id', 'category_id', 'post_image'];
 
     // protected $attributes = [
     //     'category_id' => 1,

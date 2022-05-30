@@ -6,7 +6,7 @@
     <div class="container">
         <div class="row">
             <div class="col">
-                <form action="{{ route('admin.posts.store') }}" method="post" class="row g-3 mb-3">
+                <form action="{{ route('admin.posts.store') }}" method="post" class="row g-3 mb-3" enctype="multipart/form-data">
                     @csrf
                     <div class="mb-3">
                         <label for="title" class="form-label">{{ __('Title') }}</label>
@@ -50,6 +50,14 @@
                         @endforeach
                     </fieldset>
                     @error('tags')
+                        <div class="alert alert-danger">{{ $message }}</div>
+                    @enderror
+
+                    <div class="mb-3">
+                        <label for="post_image" class="form-label">Post image</label>
+                        <input class="form-control" type="file" id="post_image" name="post_image" accept="image/*">
+                    </div>
+                    @error('post_image')
                         <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
 

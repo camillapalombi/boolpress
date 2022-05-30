@@ -3,10 +3,11 @@
     <div v-else-if="post">
         <h1>{{ post.title }}</h1>
         <b>From {{ post.user.name }}<span v-if="post.category"> in category {{ post.category.name }}</span></b>
+        <img :src="post.img_url" alt="post.title" class="img-fluid">
+        <p>{{ post.content }}</p>
         <div class="tags">
             <span v-for="tag in post.tags" :key="tag.id" class="tag">{{ tag.name }}</span>
         </div>
-        <p>{{ post.content }}</p>
     </div>
 </template>
 
